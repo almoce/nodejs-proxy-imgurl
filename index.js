@@ -16,5 +16,21 @@ app.get('/', (req, res)=>{
 	res.end();
 })
 app.get('/image.jpg', (req, res)=>{
-  request('http://lorempixel.com/400/200/').pipe(res);
+	let random = Math.floor(Math.random()*100+1);
+	// GIPHY API WITH PUBLIC TEST APIKEY
+	let api = 'http://api.giphy.com/v1/gifs/search?q=funny+cat&api_key=dc6zaTOxFJmzC&limit=1&offset='+random;
+	let imageUrl = 'http://lorempixel.com/400/200/';
+	
+	let newImage = new Promise((resolve, reject)=>{
+		request.get(api, (erro, response, body)=>{
+			let obj = JSON.parse(body)
+			let gifurl = obj.data[0].images.fixed_height.url;
+			imageUrl = gifurl ? gifurl:imageUrl;
+			resolve(imageUrl)
+		});
+	})
+	newImage.then((data)=>{
+		request(data).pipe(res);
+	})
 })
+
